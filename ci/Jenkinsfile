@@ -4,6 +4,9 @@
 
 pipeline {
     agent any
+    parameters {
+        booleanParam(defaultValue: false, description: 'Run the tests', name: 'TEST')
+    }
     stages {
         stage("Build") {
             steps {
@@ -20,6 +23,31 @@ pipeline {
         stage("Code Quantity") {
             steps {
                 sh "find . -name '*.py' | wc -l"
+            }
+        }
+        stage("Test") {
+            when {
+                expression {
+                    params.TEST
+                }
+            }
+            steps {
+                sh "python3 test_book_manager.py"
+            }
+            post {
+                always {
+                    junit 'test-reports/*.xml'
+                }
+            }
+        }
+        stage("Package") {
+            steps {
+                sh "zip package.zip *.py"
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'package.zip'
+                }
             }
         }
     }
