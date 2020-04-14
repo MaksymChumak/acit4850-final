@@ -1,24 +1,25 @@
+// Maksym Chumak
+// April 14, 2020
+// Jenkins pipeline for sample_code2 project
+
 pipeline {
     agent any
     stages {
-        stage('Build') {
+        stage("Build") {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'echo "Installing the Python Requirements..."'
+                sh "pip install -r requirements.txt"
+                sh 'echo "Requirement complete."'
             }
         }
-        stage('Tests') {
+        stage("Code Quality") {
             steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
+                sh "pylint-fail-under --fail_under 7.0 *.py"
             }
         }
-        stage('Done') {
+        stage("Code Quantity") {
             steps {
-                sh 'echo "done!"'
+                sh "find . -name '*.py' | wc -l"
             }
         }
     }
