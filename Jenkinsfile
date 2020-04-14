@@ -16,11 +16,6 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                sh 'mvn -B -DskipTests clean deploy -s settings.xml'
-            }
-        }
         stage('Done') {
             steps {
                 sh 'echo "done!"'
